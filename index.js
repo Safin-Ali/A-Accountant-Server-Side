@@ -31,11 +31,21 @@ async function run() {
 
     try {
 
-        const dbServices = client.db('a-accounter').collection('services');
+        const dbName = client.db('a-accounter');
+        const dbServices = dbName.collection('services');
+        const dbBanner = dbName.collection('banner');
 
         // get all services
-        app.get('/', (req, res) => {
-            res.send('yay i am api');
+        app.get('/',async(req, res) => {
+            const query = {};
+            const data = await dbServices.find(query).limit(3);
+            const cursor = await data.toArray()
+            res.send(cursor);
+        });
+        app.get('/banner',async(req, res) => {
+            const query = {};
+            const data = await dbBanner.findOne(query);
+            res.send(data);
         });
 
     } catch (e) {
