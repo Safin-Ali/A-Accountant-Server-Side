@@ -64,6 +64,15 @@ async function run() {
             res.send({result,reviewDT});
         })
 
+        // send user all submited feedback/review data
+        app.get(`/my-review`,async(req,res)=>{
+            const reqEmail = req.query.email;
+            const query = {userEmail: reqEmail};
+            const cursor = await dbReview.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
         // post review data
         app.post(`/review`,async(req,res)=>{
             const reqDT = req.body;
