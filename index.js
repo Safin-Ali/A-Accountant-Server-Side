@@ -35,6 +35,7 @@ async function run() {
         const dbName = client.db('a-accounter');
         const dbServices = dbName.collection('services');
         const dbBanner = dbName.collection('banner');
+        const dbReview = dbName.collection('review');
 
         // send 3 services
         app.get('/',async(req, res) => {
@@ -53,11 +54,17 @@ async function run() {
         });
 
         // send service by id
-
-        app.get(`/service/:id`,async (req,res)=>{
+        app.get(`/services/:id`,async (req,res)=>{
             const reqId = req.params.id;
             const query = {_id: ObjectId(reqId)};
             const result = await dbServices.findOne(query);
+            res.send(result);
+        })
+
+        // post review data
+        app.post(`/review`,async(req,res)=>{
+            const reqDT = req.body;
+            const result = await dbReview.insertOne(reqDT);
             res.send(result);
         })
         
