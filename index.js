@@ -64,6 +64,15 @@ async function run() {
             res.send({result,reviewDT});
         })
 
+        // send user already feedbacked/reviewed this service
+        app.get('/service',async(req, res) => {
+            const reqId = req.query.serviceId;
+            const query = {_id : ObjectId(reqId)};
+            const data = await dbServices.find(query);
+            const cursor = await data.toArray()
+            res.send(cursor);
+        });
+
         // send user all submited feedback/review data
         app.get(`/my-review`,async(req,res)=>{
             const reqEmail = req.query.email;
