@@ -53,12 +53,15 @@ async function run() {
             res.send(cursor);
         });
 
-        // send service by id
+        // send service and this service review by id
         app.get(`/services/:id`,async (req,res)=>{
             const reqId = req.params.id;
-            const query = {_id: ObjectId(reqId)};
+            const query = {_id: ObjectId(reqId)};            
+            const query2 = {serviceId: reqId};            
             const result = await dbServices.findOne(query);
-            res.send(result);
+            const cursor = await dbReview.find(query2);
+            const reviewDT = await cursor.toArray();
+            res.send({result,reviewDT});
         })
 
         // post review data
