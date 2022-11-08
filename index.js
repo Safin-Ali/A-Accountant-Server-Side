@@ -88,6 +88,15 @@ async function run() {
             const result = await dbReview.insertOne(reqDT);
             res.send(result);
         })
+
+        // delete review data
+        app.delete(`/review`,async(req,res)=>{
+            const reqEmail = req.query.userEmail;
+            const reqServiceId = req.query.serviceId;
+            const query = {serviceId: reqServiceId,userEmail: reqEmail};
+            const result = await dbReview.deleteOne(query);
+            res.send(result);
+        })
         
         // send banner images link
         app.get('/banner',async(req, res) => {
