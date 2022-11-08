@@ -35,13 +35,23 @@ async function run() {
         const dbServices = dbName.collection('services');
         const dbBanner = dbName.collection('banner');
 
-        // get all services
+        // send 3 services
         app.get('/',async(req, res) => {
             const query = {};
             const data = await dbServices.find(query).limit(3);
             const cursor = await data.toArray()
             res.send(cursor);
         });
+
+        // send all services
+        app.get('/services',async(req, res) => {
+            const query = {};
+            const data = await dbServices.find(query);
+            const cursor = await data.toArray()
+            res.send(cursor);
+        });
+        
+        // send banner images link
         app.get('/banner',async(req, res) => {
             const query = {};
             const data = await dbBanner.findOne(query);
