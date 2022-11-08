@@ -6,7 +6,8 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const {
     MongoClient,
-    ServerApiVersion
+    ServerApiVersion,
+    ObjectId
 } = require('mongodb');
 
 // Configure Code
@@ -50,6 +51,15 @@ async function run() {
             const cursor = await data.toArray()
             res.send(cursor);
         });
+
+        // send service by id
+
+        app.get(`/service/:id`,async (req,res)=>{
+            const reqId = req.params.id;
+            const query = {_id: ObjectId(reqId)};
+            const result = await dbServices.findOne(query);
+            res.send(result);
+        })
         
         // send banner images link
         app.get('/banner',async(req, res) => {
