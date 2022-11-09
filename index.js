@@ -36,6 +36,7 @@ async function run() {
         const dbServices = dbName.collection('services');
         const dbBanner = dbName.collection('banner');
         const dbReview = dbName.collection('review');
+        const dbBlog = dbName.collection('blog');
 
         // send 3 services
         app.get('/',async(req, res) => {
@@ -51,6 +52,13 @@ async function run() {
             const data = await dbServices.find(query);
             const cursor = await data.toArray()
             res.send(cursor);
+        });
+
+        // add new services
+        app.post('/services',async(req, res) => {
+            const reqBody = req.body;
+            const data = await dbServices.insertOne(reqBody);
+            res.send(data);
         });
 
         // send service and this service review by id
@@ -89,7 +97,7 @@ async function run() {
             res.send(result);
         })
 
-        // delete review data
+        // delete review data by user email,and service id
         app.delete(`/review`,async(req,res)=>{
             const reqEmail = req.query.userEmail;
             const reqServiceId = req.query.serviceId;
@@ -104,6 +112,14 @@ async function run() {
             const data = await dbBanner.findOne(query);
             res.send(data);
         });
+
+        // send blog questions and answer
+        app.get('/blog',async (req,res)=>{
+            const query = {};
+            const cursor = await dbBlog.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
 
     } catch (e) {
         console.log(e)
