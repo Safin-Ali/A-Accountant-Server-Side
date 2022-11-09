@@ -127,6 +127,16 @@ async function run() {
             res.send(result);
         })
 
+        // update review data by reviewed ObjectId
+        app.patch('/review',async(req,res)=>{
+            const reqQuery = req.query.id;
+            const reqBody = req.body.feedbackText;
+            const filter = {_id: ObjectId(reqQuery)}
+            const updateText = {$set: {feedbackText: reqBody}};
+            const result = await dbReview.updateOne(filter,updateText);
+            res.send(result)
+        })
+
         // delete review data by user email,and service id
         app.delete(`/review`,async(req,res)=>{
             const reqEmail = req.query.userEmail;
