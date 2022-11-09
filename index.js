@@ -38,8 +38,34 @@ async function run() {
         const dbReview = dbName.collection('review');
         const dbBlog = dbName.collection('blog');
 
+        // Generate JWT
+        app.post('/jwt',(req,res)=>{
+            const reqEmail = req.headers.email;
+            const encryptToken = jwt.sign(reqEmail,process.env.JWT_KEY);
+            res.send({encryptToken})
+        })
+
+        // Verify JWT
+
+        function verifyJWT (req,res,next) {
+            const encryptToken = req.headers.encrypttoken;
+            if(!encryptToken) return res.status(401).send(`Unauthorized Error`);
+            jwt.verify(encryptToken,process.env.JWT_KEY,(e,decoded)=>{
+                if(e){
+                    return res.status(401).send(`Unauthorized Error`);
+                }
+                req.decrypt = decoded;
+                next();
+            })
+        }
+
+        // root params
+        app.get('/',(req,res)=>{
+            res.send(`A-Accountant Server Is Running! YAY!`)
+        })
+
         // send 3 base services and if any user menualy added services
-        app.get('/',async(req, res) => {
+        app.get('/home',async(req, res) => {
             const reqHeaders = req.headers.email;
             const query = {};
             const query2 = {email: reqHeaders}
@@ -86,7 +112,7 @@ async function run() {
         });
 
         // send user all submited feedback/review data
-        app.get(`/my-review`,async(req,res)=>{
+        app.get(`/my-review`,verifyJWT,async(req,res)=>{
             const reqEmail = req.query.email;
             const query = {userEmail: reqEmail};
             const cursor = await dbReview.find(query);
