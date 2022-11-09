@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const {
     MongoClient,
     ServerApiVersion,
-    ObjectId
+    ObjectId,
 } = require('mongodb');
 
 // Configure Code
@@ -95,9 +95,10 @@ async function run() {
         app.get(`/services/:id`,async (req,res)=>{
             const reqId = req.params.id;
             const query = {_id: ObjectId(reqId)};            
-            const query2 = {serviceId: reqId};            
+            const query2 = {serviceId: reqId};    
+            const sort = {postedTime : -1};      
             const result = await dbServices.findOne(query);
-            const cursor = await dbReview.find(query2);
+            const cursor = await dbReview.find(query2).sort(sort);
             const reviewDT = await cursor.toArray();
             res.send({result,reviewDT});
         })
@@ -125,6 +126,7 @@ async function run() {
             const reqDT = req.body;
             const result = await dbReview.insertOne(reqDT);
             res.send(result);
+            console.log(reqDT,)
         })
 
         // update review data by reviewed ObjectId
