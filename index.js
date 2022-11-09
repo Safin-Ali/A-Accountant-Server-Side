@@ -48,9 +48,10 @@ async function run() {
         // Verify JWT
 
         function verifyJWT (req,res,next) {
-            const encryptToken = req.headers.encrypttoken;
-            if(!encryptToken) return res.status(401).send(`Unauthorized Error`);
-            jwt.verify(encryptToken,process.env.JWT_KEY,(e,decoded)=>{
+            const encryptT= req.headers.encrypttoken;
+            const key = encryptT.split(' ')[1];
+            if(!key) return res.status(401).send(`Unauthorized Error`);
+            jwt.verify(key,process.env.JWT_KEY,(e,decoded)=>{
                 if(e){
                     return res.status(401).send(`Unauthorized Error`);
                 }
@@ -85,7 +86,7 @@ async function run() {
         });
 
         // add new services
-        app.post('/services',async(req, res) => {
+        app.post('/services',verifyJWT,async(req, res) => {
             const reqBody = req.body;
             const data = await dbServices.insertOne(reqBody);
             res.send(data);
@@ -108,7 +109,7 @@ async function run() {
             const reqId = req.query.serviceId;
             const query = {_id : ObjectId(reqId)};
             const data = await dbServices.find(query);
-            const cursor = await data.toArray()
+            const cursor = await data.toArray();
             res.send(cursor);
         });
 
@@ -116,7 +117,7 @@ async function run() {
         app.get(`/my-review`,verifyJWT,async(req,res)=>{
             const reqEmail = req.query.email;
             const query = {userEmail: reqEmail};
-            const cursor = await dbReview.find(query);
+            const cursor = dbReview.find(query);
             const result = await cursor.toArray();
             res.send(result)
         })
@@ -126,7 +127,6 @@ async function run() {
             const reqDT = req.body;
             const result = await dbReview.insertOne(reqDT);
             res.send(result);
-            console.log(reqDT,)
         })
 
         // update review data by reviewed ObjectId
