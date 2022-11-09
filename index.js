@@ -38,12 +38,16 @@ async function run() {
         const dbReview = dbName.collection('review');
         const dbBlog = dbName.collection('blog');
 
-        // send 3 services
+        // send 3 base services and if any user menualy added services
         app.get('/',async(req, res) => {
+            const reqHeaders = req.headers.email;
             const query = {};
-            const data = await dbServices.find(query).limit(3);
-            const cursor = await data.toArray()
-            res.send(cursor);
+            const query2 = {email: reqHeaders}
+            const cursor = await dbServices.find(query).limit(3);
+            const cursor2 = await dbServices.find(query2);
+            const data = await cursor.toArray();
+            const userAddedDT = await cursor2.toArray();
+            res.send({data,userAddedDT});
         });
 
         // send all services
