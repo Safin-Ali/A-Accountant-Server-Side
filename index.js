@@ -46,7 +46,6 @@ async function run() {
         })
 
         // Verify JWT
-
         function verifyJWT (req,res,next) {
             const encryptT= req.headers.encrypttoken;
             const key = encryptT.split(' ')[1];
@@ -105,7 +104,7 @@ async function run() {
         })
 
         // send user already feedbacked/reviewed this service
-        app.get('/service',async(req, res) => {
+        app.get('/service',verifyJWT,async(req, res) => {
             const reqId = req.query.serviceId;
             const query = {_id : ObjectId(reqId)};
             const data = await dbServices.find(query);
